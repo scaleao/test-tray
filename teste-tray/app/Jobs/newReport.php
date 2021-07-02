@@ -8,10 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 class newReport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $tries = 2;
 
     /**
      * Create a new job instance.
@@ -30,6 +33,6 @@ class newReport implements ShouldQueue
      */
     public function handle()
     {
-        //
+        Mail::send(new App\Mail\newReport());
     }
 }

@@ -1,5 +1,7 @@
-h1>test-tray</h1>
-<h1>This repo was created for test development at Tray</h1>
+<div style="text-align: center">
+  <h1>test-tray</h1>
+  <h1>This repo was created for test development at Tray</h1>
+</div>
 
 <h3>Aplicação:</h3>
 <p>Desenvolver um sistema para cadastro de vendas para vendedores e calcular a comissão dessas vendas (a comissão será de 8.5% sobre o valor da venda) </p>

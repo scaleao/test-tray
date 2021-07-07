@@ -14,6 +14,9 @@ class newReport extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $metricas;
+    protected $users;
+    protected $relatorios;
     /**
      * Create a new message instance.
      *
@@ -22,17 +25,24 @@ class newReport extends Mailable
     public function __construct()
     {
         $hoje = str_replace('/', '-', date('Y/m/d'));
-        $this->metricas = Venda::select(DB::raw('SUM(valor) as valorTotal'), 
-                                    DB::raw('SUM(comissao) as comissaoTotal'))
-                            ->where('created_at', 'like', $hoje.'%')
-                            ->groupBy('user_id')
-                            ->get();
+        $this->metricas = Venda::select(
+                            DB::raw('SUM(valor) as valorTotal'), 
+                            DB::raw('SUM(comissao) as comissaoTotal'
+                        ), 'user_id')
+                ->where('created_at', 'like', $hoje.'%')
+                ->groupBy('user_id')
+                ->get();
         
         $this->users = DB::table('users')
                 ->join('vendas', 'users.id', '=', 'vendas.user_id')
-                ->select('users.email', 'users.name')
+                ->select('users.email', 'users.name', 'users.id')
                 ->whereDate('vendas.created_at', $hoje)
-                ->groupBy('users.email', 'users.name')
+                ->groupBy('users.email', 'users.name', 'users.id')
+                ->get();
+
+        $this->relatorios = Venda::select('vendas.*', 'users.email', 'users.name')
+                ->join('users', 'vendas.user_id', '=', 'users.id')
+                ->whereDate('vendas.created_at', $hoje)
                 ->get();
     }
 
@@ -45,12 +55,12 @@ class newReport extends Mailable
     {
         foreach($this->users as $user){
             $this->subject('Relatorio diario, teste Tray');
-            $this->to($this->user->email, $this->user->name);
-            foreach($this->metricas as $metrica){
-                return $this->markdown('mail.newReport', [
-                    'metricas' => $this->metrica
-                ]);
-            }
+            $this->to($user->email, $user->name);
+            return $this->markdown('mail.newReport', [
+                'metricas' => $this->metrica,
+                'relatorios' => $this->relatorios,
+                'user_session' => $user
+            ]);
         }
     }
 }

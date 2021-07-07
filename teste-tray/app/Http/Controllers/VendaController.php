@@ -6,6 +6,7 @@ use App\Models\Venda;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
+use App\Mail\newReport;
 
 class VendaController extends Controller
 {
@@ -81,6 +82,7 @@ class VendaController extends Controller
     public function show(Venda $venda)
     {
         //
+        return new newReport();
     }
 
     /**
